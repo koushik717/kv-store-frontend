@@ -1,65 +1,106 @@
 export default function NodeCard({ node }) {
   const { status, error, loading, label } = node;
 
-  const stateColor = {
-    LEADER: "text-green-400 border-green-500 bg-green-500/10",
-    FOLLOWER: "text-blue-400 border-blue-500 bg-blue-500/10",
-    CANDIDATE: "text-yellow-400 border-yellow-500 bg-yellow-500/10",
-  };
-
-  const dotColor = {
-    LEADER: "bg-green-400 animate-pulse",
-    FOLLOWER: "bg-blue-400",
-    CANDIDATE: "bg-yellow-400 animate-pulse",
-  };
-
   if (loading) {
     return (
-      <div className="border border-slate-700 rounded-xl p-4 bg-slate-800/50 animate-pulse">
-        <div className="h-4 bg-slate-700 rounded w-1/2 mb-2" />
-        <div className="h-8 bg-slate-700 rounded w-1/3" />
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 animate-pulse backdrop-blur-sm">
+        <div className="h-3 w-16 bg-slate-700 rounded-full mb-4" />
+        <div className="h-7 w-24 bg-slate-700 rounded-full mb-6" />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="h-10 bg-slate-800 rounded-xl" />
+          <div className="h-10 bg-slate-800 rounded-xl" />
+        </div>
       </div>
     );
   }
 
   if (error || !status) {
     return (
-      <div className="border border-red-800 rounded-xl p-4 bg-red-900/20">
+      <div className="relative rounded-2xl border border-red-900/60 bg-red-950/20 p-5 backdrop-blur-sm overflow-hidden">
+        {/* Subtle red glow in corner */}
+        <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl" />
         <div className="flex items-center gap-2 mb-1">
           <div className="w-2 h-2 rounded-full bg-red-500" />
-          <span className="text-sm text-slate-400">{label}</span>
+          <span className="text-xs font-mono text-slate-500 tracking-widest uppercase">{label}</span>
         </div>
-        <p className="text-red-400 font-bold text-lg">UNREACHABLE</p>
-        <p className="text-xs text-slate-500 mt-1">Node may be down or electing</p>
+        <p className="text-2xl font-bold text-red-400 mt-2 mb-1 tracking-tight">UNREACHABLE</p>
+        <p className="text-xs text-red-900 font-mono">node may be down · re-electing</p>
       </div>
     );
   }
 
-  const colorClass = stateColor[status.state] || "text-slate-400 border-slate-600";
-  const dot = dotColor[status.state] || "bg-slate-400";
+  const isLeader = status.state === "LEADER";
+  const isFollower = status.state === "FOLLOWER";
+  const isCandidate = status.state === "CANDIDATE";
+
+  const cardStyle = isLeader
+    ? "border-emerald-500/40 bg-emerald-950/20"
+    : isFollower
+    ? "border-blue-500/30 bg-blue-950/10"
+    : "border-yellow-500/40 bg-yellow-950/20";
+
+  const glowStyle = isLeader
+    ? "bg-emerald-500/15"
+    : isFollower
+    ? "bg-blue-500/10"
+    : "bg-yellow-500/15";
+
+  const stateColor = isLeader
+    ? "text-emerald-400"
+    : isFollower
+    ? "text-blue-400"
+    : "text-yellow-400";
+
+  const dotColor = isLeader
+    ? "bg-emerald-400"
+    : isFollower
+    ? "bg-blue-400"
+    : "bg-yellow-400";
+
+  const badgeStyle = isLeader
+    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+    : isFollower
+    ? "bg-blue-500/10 text-blue-300 border-blue-500/20"
+    : "bg-yellow-500/15 text-yellow-300 border-yellow-500/30";
 
   return (
-    <div className={`border rounded-xl p-4 ${colorClass}`}>
-      <div className="flex items-center justify-between mb-3">
+    <div className={`relative rounded-2xl border ${cardStyle} p-5 backdrop-blur-sm overflow-hidden transition-all duration-500`}>
+      {/* Corner glow */}
+      <div className={`absolute top-0 right-0 w-32 h-32 ${glowStyle} rounded-full blur-3xl pointer-events-none`} />
+
+      {/* Header row */}
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${dot}`} />
-          <span className="text-sm text-slate-400">{label}</span>
+          <div className={`relative w-2.5 h-2.5 rounded-full ${dotColor} ${isLeader || isCandidate ? "animate-pulse" : ""}`}>
+            {(isLeader || isCandidate) && (
+              <div className={`absolute inset-0 rounded-full ${dotColor} opacity-40 animate-ping`} />
+            )}
+          </div>
+          <span className="text-xs font-mono text-slate-500 tracking-widest uppercase">{label}</span>
         </div>
-        <span className="text-xs text-slate-500">
-          term {status.term}
-        </span>
+        <span className="text-xs font-mono text-slate-600">term {status.term}</span>
       </div>
 
-      <p className="font-bold text-2xl mb-3">{status.state}</p>
+      {/* State */}
+      <div className="mb-5">
+        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-widest border ${badgeStyle} uppercase`}>
+          {isLeader && <span>★</span>}
+          {status.state}
+        </span>
+        <p className={`text-3xl font-black mt-2 ${stateColor} tracking-tight leading-none`}>
+          {label}
+        </p>
+      </div>
 
-      <div className="grid grid-cols-2 gap-2 text-xs text-slate-400">
-        <div>
-          <p className="text-slate-500">Commit Index</p>
-          <p className="font-mono text-slate-200">{status.commitIndex}</p>
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/60">
+          <p className="text-[10px] text-slate-600 font-mono uppercase tracking-widest mb-1">Commit Index</p>
+          <p className="text-lg font-black text-slate-200 font-mono">{status.commitIndex}</p>
         </div>
-        <div>
-          <p className="text-slate-500">Leader</p>
-          <p className="font-mono text-slate-200 truncate">
+        <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/60">
+          <p className="text-[10px] text-slate-600 font-mono uppercase tracking-widest mb-1">Leader</p>
+          <p className="text-sm font-bold text-slate-300 font-mono truncate">
             {status.leader === "unknown" ? "—" : status.leader}
           </p>
         </div>

@@ -1,32 +1,47 @@
 import NodeCard from "./NodeCard";
 
 export default function ClusterMap({ statuses, onRefresh }) {
-  const leaderCount = statuses.filter(
-    (n) => n.status?.state === "LEADER"
-  ).length;
+  const leaderCount = statuses.filter((n) => n.status?.state === "LEADER").length;
+  const aliveCount = statuses.filter((n) => !n.error && n.status).length;
 
   return (
     <section>
-      <div className="flex items-center justify-between mb-4">
+      {/* Section header */}
+      <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-lg font-bold text-slate-100">Cluster Status</h2>
-          <p className="text-xs text-slate-500">
-            {leaderCount === 1
-              ? "✅ Cluster healthy — 1 leader elected"
-              : leaderCount === 0
-              ? "⚠️ No leader — election in progress"
-              : "❌ Split brain — multiple leaders detected"}
-          </p>
+          <h2 className="text-sm font-mono text-slate-500 tracking-widest uppercase mb-1">
+            Cluster Status
+          </h2>
+          <div className="flex items-center gap-2">
+            {leaderCount === 1 ? (
+              <span className="flex items-center gap-1.5 text-emerald-400 text-sm font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
+                Healthy · {aliveCount}/3 nodes alive
+              </span>
+            ) : leaderCount === 0 ? (
+              <span className="flex items-center gap-1.5 text-yellow-400 text-sm font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-ping inline-block" />
+                Election in progress…
+              </span>
+            ) : (
+              <span className="text-red-400 text-sm font-semibold">⚠ Split brain detected</span>
+            )}
+          </div>
         </div>
+
         <button
           onClick={onRefresh}
-          className="text-xs text-slate-400 hover:text-slate-200 border border-slate-700 hover:border-slate-500 rounded px-3 py-1 transition-colors"
+          className="group flex items-center gap-1.5 text-xs font-mono text-slate-600 
+                     hover:text-slate-300 border border-slate-800 hover:border-slate-600 
+                     rounded-lg px-3 py-1.5 transition-all duration-200"
         >
-          ↺ Refresh
+          <span className="group-hover:rotate-180 transition-transform duration-500 inline-block">↺</span>
+          Refresh
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Node cards grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {statuses.map((node) => (
           <NodeCard key={node.id} node={node} />
         ))}
