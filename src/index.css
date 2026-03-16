@@ -1,42 +1,202 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
+/* ═══════════════════════════════════════════════════
+   DESIGN SYSTEM — Pixel-perfect from mockup
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  --bg-deep:    #0a0e1a;
+  --bg-card:    #0f1628;
+  --bg-card-hover: #151d30;
+  --bg-input:   #0b1020;
+  --border:     rgba(255, 255, 255, 0.06);
+  --border-glow: rgba(255, 255, 255, 0.1);
+
+  --green:      #00e68a;
+  --green-soft: rgba(0, 230, 138, 0.15);
+  --green-glow: rgba(0, 230, 138, 0.25);
+  --blue:       #4facfe;
+  --blue-soft:  rgba(79, 172, 254, 0.15);
+  --blue-glow:  rgba(79, 172, 254, 0.25);
+  --cyan:       #00f2fe;
+  --cyan-soft:  rgba(0, 242, 254, 0.15);
+  --amber:      #f59e0b;
+  --amber-soft: rgba(245, 158, 11, 0.15);
+  --red:        #ef4444;
+  --red-soft:   rgba(239, 68, 68, 0.15);
+
+  --text-white: #f0f4f8;
+  --text-light: #c9d1d9;
+  --text-mid:   #7b8794;
+  --text-dim:   #3d4855;
+  --text-ghost: #252d38;
 }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
 body {
-  background-color: #060b14;
-  color: #e2e8f0;
-  font-family: 'Syne', system-ui, sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-white);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Monospace elements use JetBrains Mono */
-code, pre, .font-mono, kbd {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+code, pre, .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
+/* ── Scrollbar ──────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 4px; }
+
+/* ── Keyframes ──────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 4px currentColor; }
+  50% { box-shadow: 0 0 12px currentColor; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes spin-border {
+  0%   { --angle: 0deg; }
+  100% { --angle: 360deg; }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
+.animate-fade-in { animation: fadeInUp 0.6s ease-out both; }
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+
+/* ── Node card ──────────────────────────────── */
+.node-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+.node-card:hover {
+  transform: translateY(-2px);
+  background: var(--bg-card-hover);
 }
 
-/* Smooth transitions everywhere */
-* {
-  transition-property: color, background-color, border-color;
-  transition-duration: 150ms;
+/* Leader green glow border */
+.node-card.leader {
+  border-color: var(--green-glow);
+  box-shadow: 0 0 25px rgba(0, 230, 138, 0.08), inset 0 0 25px rgba(0, 230, 138, 0.03);
+}
+.node-card.leader:hover {
+  border-color: rgba(0, 230, 138, 0.4);
+  box-shadow: 0 0 40px rgba(0, 230, 138, 0.12), inset 0 0 30px rgba(0, 230, 138, 0.04);
+}
+
+/* Follower blue/cyan glow border */
+.node-card.follower {
+  border-color: var(--blue-glow);
+  box-shadow: 0 0 20px rgba(79, 172, 254, 0.06), inset 0 0 20px rgba(79, 172, 254, 0.02);
+}
+.node-card.follower:hover {
+  border-color: rgba(79, 172, 254, 0.35);
+  box-shadow: 0 0 35px rgba(79, 172, 254, 0.1), inset 0 0 25px rgba(79, 172, 254, 0.03);
+}
+
+/* Candidate amber glow */
+.node-card.candidate {
+  border-color: var(--amber-soft);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.06);
+}
+
+/* Error red glow */
+.node-card.error {
+  border-color: var(--red-soft);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.06);
+}
+
+/* ── Badge ──────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Terminal ───────────────────────────────── */
+.terminal {
+  background: linear-gradient(180deg, #0d1220 0%, #0a0e1a 100%);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* ── Chart container ────────────────────────── */
+.chart-container {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* ── Endpoint link ──────────────────────────── */
+.endpoint-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-mid);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.endpoint-link:hover {
+  border-color: var(--border-glow);
+  background: var(--bg-card-hover);
+  color: var(--text-light);
+}
+
+/* ── Section label ──────────────────────────── */
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Header stat label ──────────────────────── */
+.header-stat {
+  text-align: center;
+}
+.header-stat-label {
+  display: block;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+.header-stat-value {
+  font-size: 14px;
+  font-weight: 600;
 }

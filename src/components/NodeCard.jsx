@@ -1,110 +1,84 @@
 export default function NodeCard({ node }) {
   const { status, error, loading, label } = node;
 
+  /* Loading */
   if (loading) {
     return (
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 animate-pulse backdrop-blur-sm">
-        <div className="h-3 w-16 bg-slate-700 rounded-full mb-4" />
-        <div className="h-7 w-24 bg-slate-700 rounded-full mb-6" />
-        <div className="grid grid-cols-2 gap-3">
-          <div className="h-10 bg-slate-800 rounded-xl" />
-          <div className="h-10 bg-slate-800 rounded-xl" />
-        </div>
+      <div className="node-card" style={{ minHeight: 200 }}>
+        <div style={{ width: 60, height: 20, borderRadius: 6, background: "var(--text-ghost)", marginBottom: 16 }} />
+        <div style={{ width: 80, height: 28, borderRadius: 8, background: "var(--text-ghost)", marginBottom: 16 }} />
+        <div style={{ width: 100, height: 14, borderRadius: 4, background: "var(--text-ghost)", marginBottom: 8 }} />
+        <div style={{ width: 120, height: 36, borderRadius: 8, background: "var(--text-ghost)", marginBottom: 8 }} />
+        <div style={{ width: 50, height: 12, borderRadius: 4, background: "var(--text-ghost)" }} />
       </div>
     );
   }
 
+  /* Unreachable */
   if (error || !status) {
     return (
-      <div className="relative rounded-2xl border border-red-900/60 bg-red-950/20 p-5 backdrop-blur-sm overflow-hidden">
-        {/* Subtle red glow in corner */}
-        <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl" />
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-2 h-2 rounded-full bg-red-500" />
-          <span className="text-xs font-mono text-slate-500 tracking-widest uppercase">{label}</span>
+      <div className="node-card error" style={{ minHeight: 200 }}>
+        <div className="badge" style={{ background: "var(--red-soft)", color: "var(--red)" }}>
+          UNREACHABLE
         </div>
-        <p className="text-2xl font-bold text-red-400 mt-2 mb-1 tracking-tight">UNREACHABLE</p>
-        <p className="text-xs text-red-900 font-mono">node may be down · re-electing</p>
+        <p style={{ fontSize: 24, fontWeight: 700, color: "var(--text-white)", marginTop: 20 }}>{label}</p>
+        <p className="mono" style={{ fontSize: 11, color: "var(--text-dim)", marginTop: 8 }}>
+          Connection failed · may be re-electing
+        </p>
       </div>
     );
   }
 
   const isLeader = status.state === "LEADER";
   const isFollower = status.state === "FOLLOWER";
-  const isCandidate = status.state === "CANDIDATE";
 
-  const cardStyle = isLeader
-    ? "border-emerald-500/40 bg-emerald-950/20"
-    : isFollower
-    ? "border-blue-500/30 bg-blue-950/10"
-    : "border-yellow-500/40 bg-yellow-950/20";
-
-  const glowStyle = isLeader
-    ? "bg-emerald-500/15"
-    : isFollower
-    ? "bg-blue-500/10"
-    : "bg-yellow-500/15";
-
-  const stateColor = isLeader
-    ? "text-emerald-400"
-    : isFollower
-    ? "text-blue-400"
-    : "text-yellow-400";
-
-  const dotColor = isLeader
-    ? "bg-emerald-400"
-    : isFollower
-    ? "bg-blue-400"
-    : "bg-yellow-400";
-
-  const badgeStyle = isLeader
-    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
-    : isFollower
-    ? "bg-blue-500/10 text-blue-300 border-blue-500/20"
-    : "bg-yellow-500/15 text-yellow-300 border-yellow-500/30";
+  const cardClass = isLeader ? "leader" : isFollower ? "follower" : "candidate";
+  const badgeBg = isLeader ? "var(--green-soft)" : isFollower ? "var(--cyan-soft)" : "var(--amber-soft)";
+  const badgeColor = isLeader ? "var(--green)" : isFollower ? "var(--cyan)" : "var(--amber)";
 
   return (
-    <div className={`relative rounded-2xl border ${cardStyle} p-5 backdrop-blur-sm overflow-hidden transition-all duration-500`}>
-      {/* Corner glow */}
-      <div className={`absolute top-0 right-0 w-32 h-32 ${glowStyle} rounded-full blur-3xl pointer-events-none`} />
+    <div className={`node-card ${cardClass}`} style={{ minHeight: 200, position: "relative", zIndex: 1 }}>
+      {/* Explicit glow background element behind the card content */}
+      <div style={{
+        position: "absolute",
+        top: 0, left: 0, right: 0, bottom: 0,
+        background: isLeader ? "radial-gradient(circle at 50% 0%, rgba(0,230,138,0.15), transparent 70%)" : 
+                    isFollower ? "radial-gradient(circle at 50% 0%, rgba(79,172,254,0.12), transparent 70%)" :
+                    "radial-gradient(circle at 50% 0%, rgba(245,158,11,0.1), transparent 70%)",
+        zIndex: -1,
+        borderRadius: "inherit",
+        pointerEvents: "none"
+      }} />
 
-      {/* Header row */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className={`relative w-2.5 h-2.5 rounded-full ${dotColor} ${isLeader || isCandidate ? "animate-pulse" : ""}`}>
-            {(isLeader || isCandidate) && (
-              <div className={`absolute inset-0 rounded-full ${dotColor} opacity-40 animate-ping`} />
-            )}
-          </div>
-          <span className="text-xs font-mono text-slate-500 tracking-widest uppercase">{label}</span>
-        </div>
-        <span className="text-xs font-mono text-slate-600">term {status.term}</span>
-      </div>
-
-      {/* State */}
-      <div className="mb-5">
-        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-widest border ${badgeStyle} uppercase`}>
-          {isLeader && <span>★</span>}
+      {/* Top: Badge + Star */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+        <div className="badge" style={{ background: badgeBg, color: badgeColor }}>
           {status.state}
-        </span>
-        <p className={`text-3xl font-black mt-2 ${stateColor} tracking-tight leading-none`}>
-          {label}
-        </p>
+        </div>
+        {isLeader && (
+          <span style={{ fontSize: 20, color: "var(--text-dim)", opacity: 0.4 }}>☆</span>
+        )}
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-2">
-        <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/60">
-          <p className="text-[10px] text-slate-600 font-mono uppercase tracking-widest mb-1">Commit Index</p>
-          <p className="text-lg font-black text-slate-200 font-mono">{status.commitIndex}</p>
-        </div>
-        <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/60">
-          <p className="text-[10px] text-slate-600 font-mono uppercase tracking-widest mb-1">Leader</p>
-          <p className="text-sm font-bold text-slate-300 font-mono truncate">
-            {status.leader === "unknown" ? "—" : status.leader}
-          </p>
-        </div>
-      </div>
+      {/* Node name */}
+      <p style={{ fontSize: 24, fontWeight: 700, color: "var(--text-white)", marginBottom: 16 }}>
+        {label}
+      </p>
+
+      {/* Commit index label */}
+      <p style={{ fontSize: 12, color: "var(--text-mid)", marginBottom: 4 }}>
+        Commit index
+      </p>
+
+      {/* Commit index value — BIG */}
+      <p className="mono" style={{ fontSize: 32, fontWeight: 800, color: "var(--text-white)", marginBottom: 8, lineHeight: 1.1 }}>
+        {status.commitIndex}
+      </p>
+
+      {/* Term */}
+      <p className="mono" style={{ fontSize: 11, color: "var(--text-dim)" }}>
+        Term {status.term}
+      </p>
     </div>
   );
 }

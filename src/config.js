@@ -9,7 +9,7 @@ export const NODES = [
   {
     id: "node2",
     label: "Node 2",
-    baseUrl: "https://node2-production-5645.up.railway.app",
+    baseUrl: "https://node2-production-64d4.up.railway.app",
     grpcPort: 9091,
   },
   {
