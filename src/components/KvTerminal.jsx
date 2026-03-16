@@ -30,7 +30,7 @@ export default function KvTerminal({ leader, onOperation }) {
     setHistoryIdx(-1);
 
     if (!leaderUrl && cmd !== "HELP" && cmd !== "CLEAR") {
-      push({ type: "error", text: "Connecting to cluster... try again in 2s" });
+      push({ type: "dim", text: "  ⟳ Connecting to cluster... wait 2s and retry" });
       return;
     }
 
@@ -73,7 +73,7 @@ export default function KvTerminal({ leader, onOperation }) {
           push({ type: "dim", text: "PUT <key> <value> | GET <key> | DELETE <key> | ALL | CLEAR" });
           break;
         default:
-          push({ type: "error", text: `Unknown: ${cmd}` });
+          push({ type: "error", text: `  ✗ Unknown command: "${cmd}" — type 'help'` });
       }
     } catch (err) {
       push({ type: "error", text: `Error: ${err.response?.data?.error || err.message}` });
