@@ -1,24 +1,25 @@
-// Your Railway node URLs
+// DigitalOcean droplet node URLs
 export const NODES = [
   {
     id: "node1",
     label: "Node 1",
-    baseUrl: "https://node1-production-ad3d.up.railway.app",
+    baseUrl: "http://157.230.83.134:8080",
     grpcPort: 9090,
   },
   {
     id: "node2",
     label: "Node 2",
-    baseUrl: "https://node2-production-64d4.up.railway.app",
+    baseUrl: "http://157.230.83.134:8081",
     grpcPort: 9091,
   },
   {
     id: "node3",
     label: "Node 3",
-    baseUrl: "https://node3-production-114c.up.railway.app",
+    baseUrl: "http://157.230.83.134:8082",
     grpcPort: 9092,
   },
 ];
+
 
 export const POLL_INTERVAL_MS = 2000;   // status refresh
 export const METRICS_INTERVAL_MS = 5000; // metrics refresh

@@ -83,9 +83,9 @@ export default function App() {
         {/* ── Row 3: Endpoint links */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginTop: 40 }}>
           {[
-            { label: "Node 1 endpoint link", url: "https://node1-production-ad3d.up.railway.app" },
-            { label: "Node 2 endpoint link", url: "https://node2-production-64d4.up.railway.app" },
-            { label: "Node 3 endpoint link", url: "https://node3-production-114c.up.railway.app" },
+            { label: "Node 1 endpoint link", url: "http://157.230.83.134:8080" },
+            { label: "Node 2 endpoint link", url: "http://157.230.83.134:8081" },
+            { label: "Node 3 endpoint link", url: "http://157.230.83.134:8082" },
           ].map(({ label, url }) => (
             <a key={label} href={`${url}/admin/status`} target="_blank" rel="noreferrer"
                className="endpoint-link">
