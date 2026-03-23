@@ -83,9 +83,9 @@ export default function App() {
         {/* ── Row 3: Endpoint links */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginTop: 40 }}>
           {[
-            { label: "Node 1 endpoint link", url: "http://157.230.83.134:8080" },
-            { label: "Node 2 endpoint link", url: "http://157.230.83.134:8081" },
-            { label: "Node 3 endpoint link", url: "http://157.230.83.134:8082" },
+            { label: "Node 1 endpoint link", url: "/api/kv1" },
+            { label: "Node 2 endpoint link", url: "/api/kv2" },
+            { label: "Node 3 endpoint link", url: "/api/kv3" },
           ].map(({ label, url }) => (
             <a key={label} href={`${url}/admin/status`} target="_blank" rel="noreferrer"
                className="endpoint-link">
